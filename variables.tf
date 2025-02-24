@@ -112,3 +112,9 @@ variable "default_aws_tags" {
   description = "Default tags for AWS"
   default     = {}
 }
+
+variable "terraform_state_bucket" {
+  type        = string
+  default     = "rosa-hcp-state"
+  description = "defautl state bucket for the aws environment"
+}
