@@ -1,0 +1,48 @@
+variable "firstname" {
+  description = "testing"
+  type        = string
+  default     = "andrew"
+}
+
+variable "lastname" {
+  description = "testing"
+  type        = string
+  default     = "bavage"
+}
+
+output "jjj" {
+  value = "${var.firstname}.${var.lastname}"
+}
+
+locals {
+
+  allname = "${var.firstname}.${var.lastname}"
+
+}
+
+output "xxx" {
+  value = local.allname
+}
+
+
+data "aws_route53_zones" "all" {}
+
+
+output "got-the-zone-id" {
+  value = data.aws_route53_zones.all
+}
+
+data "aws_route53_zone" "selected" {
+  name         = "rosa.the-cluster.hi5y.p3.openshiftapps.com"
+  #zone_id       = "Z1006598SXIKK89WTWA4"
+  private_zone = true
+
+  #tags = {
+  #  "api.openshift.com/name" = "the-cluster"
+  #}
+
+}
+
+output "got-the-zone-all" {
+  value = data.aws_route53_zone.selected.zone_id
+}
