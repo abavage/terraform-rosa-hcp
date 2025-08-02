@@ -18,10 +18,6 @@ output "cluster_oidc_endpoint_url" {
   description = "oidc oidc_endpoint_url"
 }
 
-output "admin_password" {
-  value = nonsensitive(random_string.random.result)
-}
-
 output "account_id" {
   value = data.aws_caller_identity.current.id
 }
@@ -45,3 +41,12 @@ output "all_rosa_subnet_ids" {
 output "test_machine_pools" {
   value = var.machine_pools
 }
+
+output "zlogin_details" {
+  value = {
+    api_url = module.rosa-hcp.cluster_api_url
+    admin_username = var.admin_credentials_username
+    admin_passwd = nonsensitive(random_string.random.result)
+  }
+}
+
