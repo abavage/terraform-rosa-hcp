@@ -44,12 +44,18 @@ module "rosa-hcp" {
   
 
   identity_providers = {
-    
+      
     htpasswd-idp = {
-      name               = "htpasswd-idp"
-      idp_type           = "htpasswd"
-      htpasswd_idp_users = jsonencode([{ username = "test-user", password =  "Some-Complicated-123-Password"}])
-    }
+      name     = "htpasswd"
+      idp_type = "htpasswd"
+      htpasswd_idp_users = jsonencode([
+        {
+          username = "test-user"
+          password = "Some-Complicated-123-Password"
+        }
+      ])
+   }
+
   #  openid-idp = {
   #    name                                 = "openid-idp"
   #    idp_type                             = "openid"
