@@ -1,28 +1,35 @@
 variable "openshift_version" {
   type        = string
-  default     = "4.16.27"
+  #default     = "4.16.35"
+  default     = "4.18.12"
   description = "Desired version of OpenShift for the cluster, for example '4.14.20'. If version is greater than the currently running version, an upgrade will be scheduled."
 }
 
-variable "properties" {
-  type        = map(string)
-  description = "user definerd properties for hcp"
-  default     = {
-    zero_egress = true
-  }
-}
+#variable "properties" {
+#  type        = map(string)
+#  description = "user definerd properties for hcp"
+#  default     = {
+#    zero_egress = true
+#  }
+#}
 
-variable "create_vpc" {
-  type        = bool
-  description = "If you would like to create a new VPC, set this value to 'true'. If you do not want to create a new VPC, set this value to 'false'."
-  default     = "false"
-}
+#variable "create_vpc" {
+#  type        = bool
+#  description = "If you would like to create a new VPC, set this value to 'true'. If you do not want to create a new VPC, set this value to 'false'."
+#  default     = "false"
+#}
 
 # ROSA Cluster info
 variable "cluster_name" {
-  default     = "the-cluster"
+  default     = "this-cluster"
   type        = string
   description = "The name of the ROSA cluster to create"
+}
+
+variable "rosa_api_token" {
+  default     = ""
+  type        = string
+  description = "ocm token to access console.redhat.com"
 }
 
 variable "admin_credentials_username" {
@@ -37,14 +44,20 @@ variable "admin_credentials_password" {
   description = "Set this on the command line via env var 'export TF_VAR_admin_credentials_password='some_password'"
 }
 
-variable "additional_tags" {
-  default = {
-    Terraform   = "true"
-    Environment = "dev"
-  }
-  description = "Additional AWS resource tags"
-  type        = map(string)
+variable "compute_machine_type" {
+  type        = string
+  default     = "m5.xlarge"
+  description = "Identifies the Instance type used by the default worker machine pool e.g. `m5.xlarge`. Use the `rhcs_machine_types` data source to find the possible values."
 }
+
+#variable "additional_tags" {
+#  default = {
+#    Terraform   = "true"
+#    Environment = "dev"
+#  }
+#  description = "Additional AWS resource tags"
+#  type        = map(string)
+#}
 
 variable "multi_az" {
   type        = bool
@@ -52,7 +65,7 @@ variable "multi_az" {
   default     = true
 }
 
-variable "worker_node_replicas" {
+variable "replicas" {
   default     = 3
   description = "Number of worker nodes to provision. Single zone clusters need at least 2 nodes, multizone clusters need at least 3 nodes"
   type        = number
@@ -113,8 +126,112 @@ variable "default_aws_tags" {
   default     = {}
 }
 
-variable "terraform_state_bucket" {
-  type        = string
-  default     = "rosa-hcp-state"
-  description = "defautl state bucket for the aws environment"
+#variable "autoscaling" {
+#  type = object({
+#    enabled      = bool
+#    min_replicas = number
+#    max_replicas = number
+#  })
+#  default = {
+#    enabled      = false
+#    min_replicas = null
+#    max_replicas = null
+#  }
+#  nullable    = false
+#  description = "Configures autoscaling for the pool."
+#}
+
+#variable "terraform_state_bucket" {
+#  type        = string
+#  default     = "rosa-hcp-state"
+#  description = "defautl state bucket for the aws environment"
+#}
+
+#######
+variable "cluster_autoscaler_enabled" {
+  type        = bool
+  default     = true
+  description = "Enable Autoscaler for this cluster. This resource is currently unavailable and using will result in error 'Autoscaler configuration is not available'"
 }
+
+variable "autoscaler_max_pod_grace_period" {
+  type        = number
+  default     = 600
+  #default     = null
+  description = "Gives pods graceful termination time before scaling down."
+}
+
+variable "autoscaler_pod_priority_threshold" {
+  type        = number
+  default     = -10
+  #default     = null
+  description = "To allow users to schedule 'best-effort' pods, which shouldn't trigger Cluster Autoscaler actions, but only run when there are spare resources available."
+}
+
+variable "autoscaler_max_node_provision_time" {
+  type        = string
+  default     = "15m"
+  #default     = null
+  description = "Maximum time cluster-autoscaler waits for node to be provisioned."
+}
+
+variable "autoscaler_max_nodes_total" {
+  type        = number
+  default     = 18
+  #default     = null
+  description = "Maximum number of nodes in all node groups. Cluster autoscaler will not grow the cluster beyond this number."
+}
+
+variable "labels" {
+  description = "Labels for the machine pool. Format should be a comma-separated list of 'key = value'. This list will overwrite any modifications made to node labels on an ongoing basis."
+  type        = map(string)
+  default     = null
+}
+
+variable "taints" {
+  description = "Taints for a machine pool. This list will overwrite any modifications made to node taints on an ongoing basis."
+  type = list(object({
+    key           = string
+    value         = string
+    schedule_type = string
+  }))
+  default = null
+}
+
+variable "machine_pools" {
+  type = map(any)
+  default     = {}
+  description = "Provides a generic approach to add multiple machine pools after the creation of the cluster. This variable allows users to specify configurations for multiple machine pools in a flexible and customizable manner, facilitating the management of resources post-cluster deployment. For additional details regarding the variables utilized, refer to the [machine-pool sub-module](./modules/machine-pool). For non-primitive variables (such as maps, lists, and objects), supply the JSON-encoded string."
+}
+
+#variable "machine_pools" {
+#  default = {}
+#  type = map(object({
+#    name = string
+#    aws_node_pool = object({
+#      instance_type                 = string
+#      additional_security_group_ids = list(string)
+#      tags                          = map(string)
+#    })
+#    autoscaling = optional(object({
+#      enabled      = optional(bool)
+#      min_replicas = optional(string)
+#      max_replicas = optional(string)
+#    }))
+#    auto_repair           = optional(bool)
+#    replicas              = optional(number)
+#    openshift_version     = string
+#    subnet_id             = string
+#    ignore_deletion_error = optional(bool)
+#    kubelet_configs       = optional(string)
+#    labels                = optional(map(string))
+#    taints = optional(list(object({
+#      key           = optional(string)
+#      value         = optional(string)
+#      schedule_type = optional(string)
+#    })))
+#    tuning_configs               = optional(list(string))
+#    upgrade_acknowledgements_for = optional(string)
+#  }))
+#  description = "map of machine pools to create generated from the json input file."
+#}
