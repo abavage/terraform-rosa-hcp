@@ -1,4 +1,3 @@
-
 output "cluster_api_url" {
   value       = module.rosa-hcp.cluster_api_url
   description = "The URL of the API server."
@@ -46,6 +45,3 @@ output "all_rosa_subnet_ids" {
 output "test_machine_pools" {
   value = var.machine_pools
 }
-
-
-
