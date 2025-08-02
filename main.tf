@@ -115,13 +115,13 @@ module "rosa-hcp" {
       }
       labels      = local.labels
       taints      = local.taints
-      autoscaling = {
-        enabled        = false
-        min_replicas   = 0
-        max_replicas   = 0
-      }
+      #autoscaling = {
+      #  enabled        = true
+      #  min_replicas   = 0
+      #  max_replicas   = 0
+      #}
       auto_repair = true
-      #replicas = 1
+      replicas = 0
       openshift_version = var.openshift_version
       subnet_id = data.aws_subnets.private_subnets.ids[0]
     }
@@ -134,13 +134,13 @@ module "rosa-hcp" {
       }
       labels      = local.labels
       taints      = local.taints
-      autoscaling = {
-        enabled        = false
-        min_replicas   = 0
-        max_replicas   = 0
-      }
+      #autoscaling = {
+      #  enabled        = true
+      #  min_replicas   = 0
+      #  max_replicas   = 0
+      #}
       auto_repair = true
-      #replicas = 0
+      replicas = 0
       openshift_version = var.openshift_version
       subnet_id = data.aws_subnets.private_subnets.ids[1]
     }
@@ -153,13 +153,13 @@ module "rosa-hcp" {
       }
       labels      = local.labels
       taints      = local.taints
-      autoscaling = {
-        enabled        = false
-        min_replicas   = 0
-        max_replicas   = 0
-      }
+      #autoscaling = {
+      #  enabled        = true
+      #  min_replicas   = 0
+      #  max_replicas   = 0
+      #}
       auto_repair = true
-      #replicas = 0
+      replicas = 0
       openshift_version = var.openshift_version
       subnet_id = data.aws_subnets.private_subnets.ids[2]
     }

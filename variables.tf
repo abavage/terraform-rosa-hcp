@@ -5,13 +5,13 @@ variable "openshift_version" {
   description = "Desired version of OpenShift for the cluster, for example '4.14.20'. If version is greater than the currently running version, an upgrade will be scheduled."
 }
 
-#variable "properties" {
-#  type        = map(string)
-#  description = "user definerd properties for hcp"
-#  default     = {
-#    zero_egress = true
-#  }
-#}
+variable "properties" {
+  type        = map(string)
+  description = "user definerd properties for hcp"
+  default     = {
+    zero_egress = true
+  }
+}
 
 #variable "create_vpc" {
 #  type        = bool
@@ -177,7 +177,7 @@ variable "autoscaler_max_node_provision_time" {
 
 variable "autoscaler_max_nodes_total" {
   type        = number
-  default     = 18
+  default     = 9
   #default     = null
   description = "Maximum number of nodes in all node groups. Cluster autoscaler will not grow the cluster beyond this number."
 }
